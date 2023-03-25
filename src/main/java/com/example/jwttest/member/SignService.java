@@ -21,10 +21,10 @@ public class SignService {
     private final JwtProvider jwtProvider;
 
     public SignResponse login(SignRequest request) throws Exception {
-        Member member = memberRepository.findByAccount(request.getAccount()).orElseThrow(() -> new BadCredentialsException("잘못된 계정정보입니다."));
+        Member member = memberRepository.findByAccount(request.getAccount()).orElseThrow(() -> new BadCredentialsException("계정정보를 확인해주세요."));
 
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-            throw new BadCredentialsException("잘못된 계정정보입니다.");
+            throw new BadCredentialsException("비밀번호를 확인해주세요.");
         }
 
         return SignResponse.builder()
@@ -54,7 +54,6 @@ public class SignService {
             System.out.println(e.getMessage());
             throw new Exception("잘못된 요청입니다.");
         }
-
         return true;
     }
 
