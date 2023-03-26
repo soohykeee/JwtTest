@@ -57,7 +57,7 @@ public class SecurityConfig {
                 // 조건 별 요청 허용 or 제한 설정
                 .authorizeHttpRequests()
                 // register (회원가입), login (로그인) 에는 모두가 접근이 가능하도록 허용
-                .requestMatchers("/register", "/login").permitAll()
+                .requestMatchers("/register", "/login", "/refresh").permitAll()
                 // admin 관련 페이지는 ADMIN 권한인 유저만 접근 가능
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 // user 관련 페이지는 USER 권한인 유저만 접근 가능

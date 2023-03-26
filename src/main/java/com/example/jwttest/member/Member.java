@@ -32,6 +32,8 @@ public class Member {
     @Column(unique = true)
     private String email;       // 이메일
 
+    private String refreshToken;    // refreshToken
+
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Builder.Default
     private List<Authority> roles = new ArrayList<>();      // 사용자 권한(목록)
@@ -39,7 +41,9 @@ public class Member {
     public void setRoles(List<Authority> role) {
         this.roles = role;
         role.forEach(o -> o.setMember(this));
-
     }
 
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }

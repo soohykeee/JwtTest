@@ -2,6 +2,7 @@ package com.example.jwttest.member.dto;
 
 import com.example.jwttest.member.Authority;
 import com.example.jwttest.member.Member;
+import com.example.jwttest.security.TokenDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +29,7 @@ public class SignResponse {
 
     private List<Authority> roles = new ArrayList<>();
 
-    private String token;
+    private TokenDto token;
 
     public SignResponse(Member member) {
         this.id = member.getId();

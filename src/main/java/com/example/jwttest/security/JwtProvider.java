@@ -1,10 +1,7 @@
 package com.example.jwttest.security;
 
 import com.example.jwttest.member.Authority;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServlet;
@@ -32,7 +29,9 @@ public class JwtProvider {
     private Key secretKey;
 
     // 만료시간 = 1hour
-    private final Long exp = 1000L * 60 * 60;
+    // private final Long exp = 1000L * 60 * 60;
+    // 잠시 1분으로 수정
+    private final Long exp = 1000L * 60;
 
     private final JpaUserDetailsService userDetailsService;
 
@@ -42,7 +41,7 @@ public class JwtProvider {
     }
 
     // 토큰 생성
-    public String createToken(String account, List<Authority> roles) {
+    public String createAccessToken(String account, List<Authority> roles) {
         Claims claims = Jwts.claims().setSubject(account);
         claims.put("roles", roles);
         Date now = new Date();
@@ -64,7 +63,27 @@ public class JwtProvider {
 
     // Token 에 담겨있는 유저 Account  획득
     public String getAccount(String token) {
-        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
+
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (ExpiredJwtException e) {
+            e.printStackTrace();
+            return e.getClaims().getSubject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
     // Authorization Header 를 통해 인증
@@ -83,7 +102,11 @@ public class JwtProvider {
                 token = token.split(" ")[1].trim();
             }
 
-            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token);
+
             // 만료되었다면 false, 만료전이라면 true
             return !claims.getBody().getExpiration().before(new Date());
 
